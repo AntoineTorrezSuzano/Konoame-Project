@@ -1,13 +1,17 @@
 import Bullet from "./Bullet.mjs";
 
 export default class Player {
-    constructor(x, y, speed, cooldown = 0, width = 10, height = 10) {
-        this.width = width;
-        this.height = height;
-        this.x = x - this.width / 2;
-        this.y = y - this.height / 2;
+    constructor(x, y, speed, spriteSrc, cooldown = 0, hitboxSize = 10) {
+        this.x = x;
+        this.y = y;
         this.speed = speed;
+        this.sprite = new Image();
+        this.sprite.src = spriteSrc;
         this.cooldown = cooldown;
+
+        // hitbox properties
+        this.hitboxSize = hitboxSize;
+        this.hitboxOffset = hitboxSize / 2; // to center the hitbox
     }
     handleMovement(keys, deltaTime) {
         if (keys["ArrowUp"]) this.y -= this.speed * deltaTime;
@@ -16,18 +20,19 @@ export default class Player {
         if (keys["ArrowRight"]) this.x += this.speed * deltaTime;
     }
     checkBoundaries(gameZone) {
-        this.x = Math.max(gameZone.x, Math.min(this.x, gameZone.x + gameZone.width - this.width));
-        this.y = Math.max(gameZone.y, Math.min(this.y, gameZone.y + gameZone.height - this.height));
+        const halfSize = this.hitboxOffset; // For centering hitbox
+        this.x = Math.max(gameZone.x + halfSize, Math.min(this.x, gameZone.x + gameZone.width - halfSize));
+        this.y = Math.max(gameZone.y + halfSize, Math.min(this.y, gameZone.y + gameZone.height - halfSize));
     }
-    shoot(bullets, direction = 180, speed = 1000, radius = 20, color = "red") {
+    shoot(bullets, direction = 180, speed = 1000, radius = 5, color = "red") {
         const bullet = new Bullet(
             true,
             direction,
-            this.x + this.width / 2,
-            this.y + this.height / 2,
+            this.x,
+            this.y,
             speed,
             radius,
-            "red"
+            color
         );
         bullets.push(bullet);
         this.cooldown = 0.05;
@@ -44,8 +49,16 @@ export default class Player {
     }
 
     render(ctx) {
-        ctx.fillStyle = "white";
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+
+        ctx.drawImage(this.sprite, this.x - this.sprite.width / 2, this.y - this.sprite.height / 2);
+
+        ctx.save();
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.hitboxOffset, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
     }
 
 };

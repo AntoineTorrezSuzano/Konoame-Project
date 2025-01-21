@@ -3,6 +3,8 @@ import Bullet from "./classes/Bullet.mjs";
 import Player from "./classes/Player.mjs";
 import { FPSCounter } from "./classes/FPSCounter.mjs";
 document.addEventListener("DOMContentLoaded", () => {
+    const playerSpriteSrc = "./assets/characters/reimu/sprite00.png"
+
     // Game State
     const gameState = {
         canvas: null,
@@ -26,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         gameState.player = new Player(
             gameState.gameZone.width / 2 + gameState.gameZone.x,
             gameState.gameZone.height - gameState.gameZone.height / 6 + gameState.gameZone.y,
-            525
+            525, playerSpriteSrc
         )
         window.addEventListener("keydown", (e) => (gameState.keys[e.key] = true));
         window.addEventListener("keyup", (e) => (gameState.keys[e.key] = false));
