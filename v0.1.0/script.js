@@ -3,7 +3,8 @@ import Bullet from "./classes/Bullet.mjs";
 import Player from "./classes/Player.mjs";
 import { FPSCounter } from "./classes/FPSCounter.mjs";
 document.addEventListener("DOMContentLoaded", () => {
-    const playerSpriteSrc = "./assets/characters/reimu/sprite00.png"
+    const playerSpriteSrc = "./assets/characters/reimu/sprite00.png";
+    const gamezoneBackgroundSrc = "./assets/backgrounds/background00.png";
 
     // Game State
     const gameState = {
@@ -24,7 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
         gameState.ctx = gameState.canvas.getContext("2d");
 
         // Create game objects
-        gameState.gameZone = new GameZone(100, 50, 600, 800);
+        gameState.gameZone = new GameZone(100, 50, 600, 800, "rgba(25, 52, 21, 0.759)", gamezoneBackgroundSrc);
+        gameState.gameZone.setBackgroundDarkness(0.5);
         gameState.player = new Player(
             gameState.gameZone.width / 2 + gameState.gameZone.x,
             gameState.gameZone.height - gameState.gameZone.height / 6 + gameState.gameZone.y,
