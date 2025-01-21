@@ -14,10 +14,11 @@ export default class Player {
         this.hitboxOffset = hitboxSize / 2; // to center the hitbox
     }
     handleMovement(keys, deltaTime) {
-        if (keys["ArrowUp"]) this.y -= this.speed * deltaTime;
-        if (keys["ArrowDown"]) this.y += this.speed * deltaTime;
-        if (keys["ArrowLeft"]) this.x -= this.speed * deltaTime;
-        if (keys["ArrowRight"]) this.x += this.speed * deltaTime;
+        const currentSpeed = keys["shift"] ? this.speed / 2 : this.speed;
+        if (keys["arrowup"]) this.y -= currentSpeed * deltaTime;
+        if (keys["arrowdown"]) this.y += currentSpeed * deltaTime;
+        if (keys["arrowleft"]) this.x -= currentSpeed * deltaTime;
+        if (keys["arrowright"]) this.x += currentSpeed * deltaTime;
     }
     checkBoundaries(gameZone) {
         const halfSize = this.hitboxOffset; // For centering hitbox

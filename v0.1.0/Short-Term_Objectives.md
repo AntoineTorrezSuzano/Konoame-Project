@@ -3,11 +3,12 @@
     - [x] Find 1 fix sprite for player 
     - [x] Find 1 fix sprite for bullet 
     - [x] Find 1 fix sprite for background
-    - [x] Implement the assets found **On it**
+    - [x] Implement the assets found 
 - [ ] Add enemies
-    - [ ] Create ennemie class 
-    - [ ] Make them lose hp when hit by friendly bullet
+    - [x] Create ennemie class 
+    - [x] Make them lose hp when hit by friendly bullet
     - [ ] Disapear when no hp 
+    - [ ] Correctly setup the hitbox with CollideWith **On it**
 - [ ] Add Information zone with Best score, score, player Lives, Bombs and Power
 
 

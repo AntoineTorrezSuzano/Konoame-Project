@@ -62,19 +62,26 @@ export default class Bullet {
     isOffScreen(scene) {
         const { x = 0, y = 0, width, height } = scene;
         return (
-            this.x + this.radius < scene.x ||
-            this.x - this.radius > scene.width + scene.x ||
-            this.y + this.radius < scene.y ||
-            this.y - this.radius > scene.height + scene.y
+            this.x + this.radius < x ||
+            this.x - this.radius > width + x ||
+            this.y + this.radius < y ||
+            this.y - this.radius > height + y
         );
 
 
     }
     collidesWith(target) {
-        const dx = this.x - (target.x + target.width / 2);
-        const dy = this.y - (target.y + target.height / 2);
+
+        const targetWidth = target.width || target.hitboxSize;
+        const targetHeight = target.height || target.hitboxSize;
+
+        const targetX = target.x - targetWidth / 2;
+        const targetY = target.y - targetHeight / 2;
+
+        const dx = this.x - (targetX + targetWidth / 2);
+        const dy = this.y - (targetY + targetHeight / 2);
         const distance = Math.sqrt(dx * dx + dy * dy);
-        return distance < this.radius + Math.min(target.width, target.height) / 2;
+        return distance < this.radius + Math.min(targetWidth, targetHeight) / 2;
     }
 
 
