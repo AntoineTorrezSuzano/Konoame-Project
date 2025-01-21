@@ -24,7 +24,7 @@ export default class Player {
         this.x = Math.max(gameZone.x + halfSize, Math.min(this.x, gameZone.x + gameZone.width - halfSize));
         this.y = Math.max(gameZone.y + halfSize, Math.min(this.y, gameZone.y + gameZone.height - halfSize));
     }
-    shoot(bullets, direction = 180, speed = 1000, radius = 5, color = "red") {
+    shoot(bullets, direction = 180, speed = 2000, radius = 5, color = "red") {
         const bullet = new Bullet(
             true,
             direction,
@@ -32,7 +32,8 @@ export default class Player {
             this.y,
             speed,
             radius,
-            color
+            color,
+            "./assets/characters/reimu/bullet_0.png"
         );
         bullets.push(bullet);
         this.cooldown = 0.05;

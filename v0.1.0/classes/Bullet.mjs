@@ -6,7 +6,8 @@ export default class Bullet {
         y = 0,
         speed = 500,
         radius = 5,
-        color = "white"
+        color = "white",
+        spriteSrc = null // Sprite source
     ) {
         this.friendly = friendly;
         this.direction = direction;
@@ -15,6 +16,13 @@ export default class Bullet {
         this.speed = speed;
         this.radius = radius;
         this.color = color;
+
+        this.sprite = null;
+        if (spriteSrc) {
+            this.sprite = new Image();
+            this.sprite.src = spriteSrc;
+        }
+
     }
 
 
@@ -28,35 +36,38 @@ export default class Bullet {
     }
     update(deltaTime) {
         const velocity = this.getVelocity();
-
         this.x += velocity.x * deltaTime;
         this.y += velocity.y * deltaTime;
     }
     render(ctx) {
-        ctx.save();
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.closePath();
-        ctx.fill();
-        ctx.restore();
-    }
-    isOffScreen(scene) {
-        if (scene.x && scene.y) {
-            return (
-                this.x + this.radius < scene.x ||
-                this.x - this.radius > scene.width + scene.x ||
-                this.y + this.radius < scene.y ||
-                this.y - this.radius > scene.height + scene.y
+        if (this.sprite) {
+            ctx.drawImage(
+                this.sprite,
+                this.x - this.sprite.width / 2,
+                this.y - this.sprite.height / 2
             );
         } else {
-            return (
-                this.x + this.radius < 0 ||
-                this.x - this.radius > scene.width ||
-                this.y + this.radius < 0 ||
-                this.y - this.radius > scene.height
-            );
+            // fallback circle if no sprite
+            ctx.save();
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
         }
+
+
+    }
+    isOffScreen(scene) {
+        const { x = 0, y = 0, width, height } = scene;
+        return (
+            this.x + this.radius < scene.x ||
+            this.x - this.radius > scene.width + scene.x ||
+            this.y + this.radius < scene.y ||
+            this.y - this.radius > scene.height + scene.y
+        );
+
 
     }
     collidesWith(target) {
