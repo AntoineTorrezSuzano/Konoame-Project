@@ -41,13 +41,23 @@ export default class Bullet {
         ctx.fill();
         ctx.restore();
     }
-    ifOffScreen(canvas) {
-        return (
-            this.x + this.radius < 0 ||
-            this.x - this.radius > canvas.width ||
-            this.y + this.radius < 0 ||
-            this.y - this.radius > canvas.height
-        );
+    isOffScreen(scene) {
+        if (scene.x && scene.y) {
+            return (
+                this.x + this.radius < scene.x ||
+                this.x - this.radius > scene.width + scene.x ||
+                this.y + this.radius < scene.y ||
+                this.y - this.radius > scene.height + scene.y
+            );
+        } else {
+            return (
+                this.x + this.radius < 0 ||
+                this.x - this.radius > scene.width ||
+                this.y + this.radius < 0 ||
+                this.y - this.radius > scene.height
+            );
+        }
+
     }
     collidesWith(target) {
         const dx = this.x - (target.x + target.width / 2);

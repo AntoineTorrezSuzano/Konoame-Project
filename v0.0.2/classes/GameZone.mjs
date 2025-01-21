@@ -1,6 +1,6 @@
 export default class GameZone {
 
-    constructor(x, y, width, height, color = "orange") {
+    constructor(x, y, width, height, color = "rgba(25, 52, 21, 0.759)") {
         this.x = x;
         this.y = y;
         this.width = width;
