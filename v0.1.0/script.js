@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const { player, enemies, keys, gameZone, bullets, canvas } = gameState;
         //gameZone
         bullets.forEach((bullet) => bullet.update(deltaTime));
-        enemies.forEach((enemy) => enemy.update(deltaTime, bullets, enemies, player, deltaTime));
+        enemies.forEach((enemy) => enemy.update(deltaTime, bullets, enemies, player));
         player.update(deltaTime, keys, gameZone, bullets, status);
 
 
