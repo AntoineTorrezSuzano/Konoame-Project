@@ -26,6 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // Canvas
         gameState.canvas = document.getElementById("gameCanvas");
         gameState.ctx = gameState.canvas.getContext("2d");
+        gameState.ctx.imageSmoothingEnabled = false;
+
 
         // Create game objects
         gameState.gameZone = new GameZone(100, 50, 600, 800, "rgba(25, 52, 21, 0.759)", gamezoneBackgroundSrc);
@@ -33,10 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
         gameState.player = new Player({
             x: gameState.gameZone.width / 2 + gameState.gameZone.x,
             y: gameState.gameZone.height - gameState.gameZone.height / 6 + gameState.gameZone.y,
-            speed: 525,
+            speed: 450,
             spriteSrc: playerSpriteSrc,
             cooldown: 0.05,
             life: 1,
+            hitboxSize: 5,
         })
         window.addEventListener("keydown", (e) => (gameState.keys[e.key.toLowerCase()] = true));
         window.addEventListener("keyup", (e) => (gameState.keys[e.key.toLowerCase()] = false));
@@ -49,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const x = gameState.gameZone.width / 2 + gameState.gameZone.x;
         const y = gameState.gameZone.height / 5;
         const speed = 0;
-        const cooldown = 0.2;
+        const cooldown = 0.4;
         const hitboxSize = 100;
         const maxHp = 10000;
         const enemy = new Enemy(x, y, speed, enemySpriteSrc, cooldown, hitboxSize, maxHp);
@@ -76,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const { player, enemies, keys, gameZone, bullets, canvas } = gameState;
         //gameZone
         bullets.forEach((bullet) => bullet.update(deltaTime));
-        enemies.forEach((enemy) => enemy.update(deltaTime, bullets, enemies));
+        enemies.forEach((enemy) => enemy.update(deltaTime, bullets, enemies, player, deltaTime));
         player.update(deltaTime, keys, gameZone, bullets, status);
 
 

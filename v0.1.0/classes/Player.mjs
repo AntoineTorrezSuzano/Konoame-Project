@@ -24,14 +24,14 @@ export default class Player {
         this.x = Math.max(gameZone.x + radius, Math.min(this.x, gameZone.x + gameZone.width - radius));
         this.y = Math.max(gameZone.y + radius, Math.min(this.y, gameZone.y + gameZone.height - radius));
     }
-    shoot(bullets, direction = 180, speed = 2000) {
+    shoot({ bullets, direction = 180, speed = 2000, bulletX, bulletY }) {
         const bullet = new Bullet({
             friendly: true,
             direction: direction,
-            x: this.x,
-            y: this.y,
+            x: this.x + bulletX,
+            y: this.y + bulletY,
             speed: speed,
-            damage: 200,
+            damage: 45,
             spriteSrc: "./assets/characters/reimu/bullet_0.png",
             isRound: false,
         });
@@ -47,7 +47,9 @@ export default class Player {
         this.handleCollisions(bullets, status);
 
         if (keys["y"] && this.currentCooldown <= 0) {
-            this.shoot(bullets)
+            this.shoot({ bullets: bullets, bulletX: 15, bulletY: 0 });
+            this.shoot({ bullets: bullets, bulletX: 0, bulletY: -10 });
+            this.shoot({ bullets: bullets, bulletX: -15, bulletY: 0 });
         }
     }
     handleCollisions(bullets, status) {

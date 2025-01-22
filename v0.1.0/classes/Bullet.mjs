@@ -7,6 +7,8 @@ export default class Bullet {
         speed = 500,
         spriteSrc,
         damage,
+        width = null,
+        height = null,
         isRound,
     }) {
         if (!spriteSrc) {
@@ -19,17 +21,21 @@ export default class Bullet {
         this.y = y;
         this.speed = speed;
         this.damage = damage;
+        this.isRound = isRound;
 
         this.sprite = new Image();
         this.sprite.src = spriteSrc;
-        this.width = 0;
-        this.height = 0;
 
-        this.isRound = isRound;
-
-        this.sprite.onload = () => {
-            this.width = this.sprite.width;
-            this.height = this.sprite.height;
+        if (width && height) {
+            this.width = width;
+            this.height = height;
+        } else {
+            this.width = 0;
+            this.height = 0;
+            this.sprite.onload = () => {
+                this.width = this.sprite.width;
+                this.height = this.sprite.height;
+            }
         }
     }
 
@@ -48,7 +54,6 @@ export default class Bullet {
     }
 
     render(ctx) {
-
         ctx.drawImage(
             this.sprite,
             this.x - this.width / 2,
@@ -80,11 +85,12 @@ export default class Bullet {
 
     }
     collidesWith(target) {
-        if (target.hitboxRadius) {
+        if (this.isRound) {
             const dx = this.x - target.x;
             const dy = this.y - target.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            return distance < this.width / 2 + target.hitboxRadius;
+            const targetRadius = target.hitboxRadius || Math.min(target.width, target.height) / 2;
+            return distance < Math.min(this.width, this.height) / 2 + targetRadius;
         } else {
             const bulletLeft = this.x - this.width / 2
             const bulletRight = this.x + this.width / 2
