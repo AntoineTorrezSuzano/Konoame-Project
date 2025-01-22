@@ -1,17 +1,16 @@
 import Bullet from "./Bullet.mjs";
 
 export default class Player {
-    constructor(x, y, speed, spriteSrc, cooldown = 0, hitboxSize = 10) {
+    constructor({ x, y, speed, spriteSrc, cooldown, hitboxSize = 10, life = 3 }) {
         this.x = x;
         this.y = y;
         this.speed = speed;
         this.sprite = new Image();
         this.sprite.src = spriteSrc;
         this.cooldown = cooldown;
-
-        // hitbox properties
-        this.hitboxSize = hitboxSize;
-        this.hitboxOffset = hitboxSize / 2; // to center the hitbox
+        this.currentCooldown = 0;
+        this.hitboxRadius = hitboxSize / 2;
+        this.life = life;
     }
     handleMovement(keys, deltaTime) {
         const currentSpeed = keys["shift"] ? this.speed / 2 : this.speed;
@@ -21,43 +20,65 @@ export default class Player {
         if (keys["arrowright"]) this.x += currentSpeed * deltaTime;
     }
     checkBoundaries(gameZone) {
-        const halfSize = this.hitboxOffset; // For centering hitbox
-        this.x = Math.max(gameZone.x + halfSize, Math.min(this.x, gameZone.x + gameZone.width - halfSize));
-        this.y = Math.max(gameZone.y + halfSize, Math.min(this.y, gameZone.y + gameZone.height - halfSize));
+        const radius = this.hitboxRadius; // For centering hitbox
+        this.x = Math.max(gameZone.x + radius, Math.min(this.x, gameZone.x + gameZone.width - radius));
+        this.y = Math.max(gameZone.y + radius, Math.min(this.y, gameZone.y + gameZone.height - radius));
     }
-    shoot(bullets, direction = 180, speed = 2000, radius = 5, color = "red") {
-        const bullet = new Bullet(
-            true,
-            direction,
-            this.x,
-            this.y,
-            speed,
-            radius,
-            color,
-            "./assets/characters/reimu/bullet_0.png"
-        );
+    shoot(bullets, direction = 180, speed = 2000) {
+        const bullet = new Bullet({
+            friendly: true,
+            direction: direction,
+            x: this.x,
+            y: this.y,
+            speed: speed,
+            damage: 200,
+            spriteSrc: "./assets/characters/reimu/bullet_0.png",
+            isRound: false,
+        });
         bullets.push(bullet);
-        this.cooldown = 0.05;
+        this.currentCooldown = this.cooldown;
     }
-    update(deltaTime, keys, gameZone, bullets) {
-        if (this.cooldown > 0) this.cooldown -= deltaTime;
+    update(deltaTime, keys, gameZone, bullets, status) {
+        if (this.cooldown > 0) this.currentCooldown -= deltaTime;
 
         this.handleMovement(keys, deltaTime);
         this.checkBoundaries(gameZone);
 
-        if (keys["y"] && this.cooldown <= 0) {
+        this.handleCollisions(bullets, status);
+
+        if (keys["y"] && this.currentCooldown <= 0) {
             this.shoot(bullets)
         }
     }
+    handleCollisions(bullets, status) {
+        for (let i = bullets.length - 1; i >= 0; i--) {
+            const bullet = bullets[i];
+            if (!bullet.friendly && bullet.collidesWith(this)) {
+                console.log("Player Hit")
+                this.life -= 1;
+                bullets.splice(i, 1);
+                if (this.life <= 0) {
+                    this.onDeath(status);
+                    break;
+                }
+            }
+        }
+    }
+    onDeath(status) {
+        console.log("Defeated Reimu");
+        status.lost = true;
+    }
+
+
 
     render(ctx) {
 
         ctx.drawImage(this.sprite, this.x - this.sprite.width / 2, this.y - this.sprite.height / 2);
 
         ctx.save();
-        ctx.fillStyle = "red";
+        ctx.fillStyle = "green";
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.hitboxOffset, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.hitboxRadius, 0, Math.PI * 2);
         ctx.closePath();
         ctx.fill();
         ctx.restore();

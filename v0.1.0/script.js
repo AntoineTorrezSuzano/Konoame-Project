@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
         accumulatedTime: 0,
         fixedTimeStep: 1000 / 60, //60 FPS
     };
+    const status = { lost: false };
     function initialize() {
         // Canvas
         gameState.canvas = document.getElementById("gameCanvas");
@@ -29,11 +30,14 @@ document.addEventListener("DOMContentLoaded", () => {
         // Create game objects
         gameState.gameZone = new GameZone(100, 50, 600, 800, "rgba(25, 52, 21, 0.759)", gamezoneBackgroundSrc);
         gameState.gameZone.setBackgroundDarkness(0.5);
-        gameState.player = new Player(
-            gameState.gameZone.width / 2 + gameState.gameZone.x,
-            gameState.gameZone.height - gameState.gameZone.height / 6 + gameState.gameZone.y,
-            525, playerSpriteSrc
-        )
+        gameState.player = new Player({
+            x: gameState.gameZone.width / 2 + gameState.gameZone.x,
+            y: gameState.gameZone.height - gameState.gameZone.height / 6 + gameState.gameZone.y,
+            speed: 525,
+            spriteSrc: playerSpriteSrc,
+            cooldown: 0.05,
+            life: 1,
+        })
         window.addEventListener("keydown", (e) => (gameState.keys[e.key.toLowerCase()] = true));
         window.addEventListener("keyup", (e) => (gameState.keys[e.key.toLowerCase()] = false));
 
@@ -53,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
         gameState.enemies.push(enemy);
     }
     function gameLoop(timestamp) {
+        if (status.lost) { console.log("GameOver"); return; }
         const deltaTime = timestamp - gameState.lastTime;
         gameState.lastTime = timestamp;
 
@@ -67,11 +72,14 @@ document.addEventListener("DOMContentLoaded", () => {
         requestAnimationFrame(gameLoop);
     }
     function update(deltaTime) {
-        const { player, enemies, keys, gameZone, bullets, canvas } = gameState;
-        enemies.forEach((enemy) => enemy.update(deltaTime, bullets));
-        player.update(deltaTime, keys, gameZone, bullets);
 
+        const { player, enemies, keys, gameZone, bullets, canvas } = gameState;
+        //gameZone
         bullets.forEach((bullet) => bullet.update(deltaTime));
+        enemies.forEach((enemy) => enemy.update(deltaTime, bullets, enemies));
+        player.update(deltaTime, keys, gameZone, bullets, status);
+
+
 
 
         gameState.bullets = bullets.filter(

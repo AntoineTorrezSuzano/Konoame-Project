@@ -1,31 +1,37 @@
 export default class Bullet {
-    constructor(
+    constructor({
         friendly = true,
         direction = 0,
         x = 0,
         y = 0,
         speed = 500,
-        radius = 5,
-        color = "white",
-        spriteSrc = null // Sprite source
-    ) {
+        spriteSrc,
+        damage,
+        isRound,
+    }) {
+        if (!spriteSrc) {
+            throw new Error("A sprite source is required for the Bullet class.");
+        }
+
         this.friendly = friendly;
         this.direction = direction;
         this.x = x;
         this.y = y;
         this.speed = speed;
-        this.radius = radius;
-        this.color = color;
+        this.damage = damage;
 
-        this.sprite = null;
-        if (spriteSrc) {
-            this.sprite = new Image();
-            this.sprite.src = spriteSrc;
+        this.sprite = new Image();
+        this.sprite.src = spriteSrc;
+        this.width = 0;
+        this.height = 0;
+
+        this.isRound = isRound;
+
+        this.sprite.onload = () => {
+            this.width = this.sprite.width;
+            this.height = this.sprite.height;
         }
-
     }
-
-
 
     getVelocity() {
         const radians = (this.direction * Math.PI) / 180;
@@ -34,54 +40,68 @@ export default class Bullet {
             y: Math.cos(radians) * this.speed,
         };
     }
+
     update(deltaTime) {
-        const velocity = this.getVelocity();
-        this.x += velocity.x * deltaTime;
-        this.y += velocity.y * deltaTime;
+        const { x, y } = this.getVelocity();
+        this.x += x * deltaTime;
+        this.y += y * deltaTime;
     }
+
     render(ctx) {
-        if (this.sprite) {
-            ctx.drawImage(
-                this.sprite,
-                this.x - this.sprite.width / 2,
-                this.y - this.sprite.height / 2
-            );
-        } else {
-            // fallback circle if no sprite
-            ctx.save();
-            ctx.fillStyle = this.color;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-            ctx.closePath();
-            ctx.fill();
-            ctx.restore();
-        }
 
-
+        ctx.drawImage(
+            this.sprite,
+            this.x - this.width / 2,
+            this.y - this.height / 2,
+            this.width,
+            this.height
+        );
+        ctx.save();
+        ctx.strokeStyle = "green";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(
+            this.x - this.width / 2,
+            this.y - this.height / 2,
+            this.width,
+            this.height
+        );
+        ctx.restore();
     }
     isOffScreen(scene) {
         const { x = 0, y = 0, width, height } = scene;
         return (
-            this.x + this.radius < x ||
-            this.x - this.radius > width + x ||
-            this.y + this.radius < y ||
-            this.y - this.radius > height + y
+            this.x + this.width / 2 < x ||
+            this.x - this.width / 2 > width + x ||
+            this.y + this.height / 2 < y ||
+            this.y - this.height / 2 > height + y
         );
 
 
     }
     collidesWith(target) {
+        if (target.hitboxRadius) {
+            const dx = this.x - target.x;
+            const dy = this.y - target.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            return distance < this.width / 2 + target.hitboxRadius;
+        } else {
+            const bulletLeft = this.x - this.width / 2
+            const bulletRight = this.x + this.width / 2
+            const bulletTop = this.y - this.width / 2
+            const bulletBottom = this.y + this.width / 2
 
-        const targetWidth = target.width || target.hitboxSize;
-        const targetHeight = target.height || target.hitboxSize;
+            const targetLeft = target.x - target.width / 2
+            const targetRight = target.x + target.width / 2
+            const targetTop = target.y - target.height / 2
+            const targetBottom = target.y + target.height / 2
 
-        const targetX = target.x - targetWidth / 2;
-        const targetY = target.y - targetHeight / 2;
-
-        const dx = this.x - (targetX + targetWidth / 2);
-        const dy = this.y - (targetY + targetHeight / 2);
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        return distance < this.radius + Math.min(targetWidth, targetHeight) / 2;
+            return (
+                bulletRight > targetLeft &&
+                bulletLeft < targetRight &&
+                bulletBottom > targetTop &&
+                bulletTop < targetBottom
+            );
+        }
     }
 
 

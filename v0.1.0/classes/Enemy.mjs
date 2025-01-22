@@ -9,14 +9,21 @@ export default class Enemy {
         this.sprite.src = spriteSrc;
         this.cooldown = cooldown;
         this.hitboxSize = hitboxSize;
-        this.hitboxOffset = hitboxSize / 2;
         this.currentCooldown = 0;
 
         this.hp = maxHp;
         this.maxHp = maxHp;
+
+        this.width = hitboxSize;
+        this.height = hitboxSize;
+
+        this.sprite.onload = () => {
+            this.width = this.sprite.width * 2;
+            this.height = this.sprite.height * 2;
+        }
     }
 
-    update(deltaTime, bullets) {
+    update(deltaTime, bullets, enemies) {
         if (this.currentCooldown > 0) {
             this.currentCooldown -= deltaTime;
         }
@@ -27,55 +34,67 @@ export default class Enemy {
             this.shoot(bullets);
             this.currentCooldown = this.cooldown;
         }
-        this.handleCollisions(bullets);
+        this.handleCollisions(bullets, enemies);
 
     }
     shoot(bullets) {
-        const bullet = new Bullet(
-            false,
-            0,
-            this.x,
-            this.y + this.hitboxOffset,
-            300,
-            5,
-            "blue",
-            "./assets/enemy/rumia/bullet00.png"
-        )
+        const bullet = new Bullet({
+            friendly: false,
+            direction: 0,
+            x: this.x,
+            y: this.y + this.height / 2,
+            speed: 300,
+            spriteSrc: "./assets/enemy/rumia/bullet00.png",
+            isRound: true,
+        })
         bullets.push(bullet);
     }
-    handleCollisions(bullets) {
+    handleCollisions(bullets, enemies) {
 
         for (let i = bullets.length - 1; i >= 0; i--) {
-
             const bullet = bullets[i];
             if (bullet.friendly && bullet.collidesWith(this)) {
-                console.log(bullet);
-                this.hp -= 100;
+                this.hp -= bullet.damage;
                 bullets.splice(i, 1);
                 if (this.hp <= 0) {
-                    this.onDeath();
+                    this.onDeath(enemies);
                     break;
                 }
             }
         }
     }
-    onDeath() {
+    onDeath(enemies) {
         console.log("Rumia defeated !");
+        for (let i = enemies.length - 1; i >= 0; i--) {
+            const enemy = enemies[i];
+            if (enemy == this) {
+                enemies.splice(i, 1);
+            }
+        }
     }
 
 
     render(ctx) {
         ctx.drawImage(
             this.sprite,
-            this.x - this.sprite.width * 2 / 2,
-            this.y - this.sprite.height * 2 / 2,
-            this.sprite.width * 2,
-            this.sprite.height * 2
+            this.x - this.width / 2,
+            this.y - this.height / 2,
+            this.width,
+            this.height
         );
-        // ctx.fillRect(this.x - this.hitboxOffset, this.y - this.hitboxOffset, this.hitboxSize, this.hitboxSize);
+        ctx.save();
+        ctx.strokeStyle = "yellow";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(
+            this.x - this.width / 2,
+            this.y - this.height / 2,
+            this.width,
+            this.height
+        );
+        ctx.restore();
     }
     isOffScreen(scene) {
-        return this.y - this.hitboxSize > scene.height;
+        return this.y - this.height > scene.height;
     }
 
     renderHpBar(ctx, gameZone) {
