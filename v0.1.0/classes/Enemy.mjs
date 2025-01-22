@@ -31,24 +31,38 @@ export default class Enemy {
         this.y += this.speed * deltaTime;
 
         if (this.currentCooldown <= 0) {
-            this.shoot(bullets);
+            const time = (performance.now() / 100) % 360;
+            // this.shoot(bullets);
+            this.shootSpiral(bullets, 12, time, 300);
             this.currentCooldown = this.cooldown;
         }
         this.handleCollisions(bullets, enemies);
 
     }
     shoot(bullets) {
-        const bullet = new Bullet({
-            friendly: false,
-            direction: 0,
-            x: this.x,
-            y: this.y + this.height / 2,
-            speed: 300,
-            spriteSrc: "./assets/enemy/rumia/bullet00.png",
-            isRound: true,
-        })
-        bullets.push(bullet);
+
+        if (this.currentCooldown <= 0) {
+            this.shootSpiral(bullets, 12, 0, 300);
+            this.currentCooldown = this.cooldown;
+        }
     }
+    shootSpiral(bullets, bulletCount, angleOffset, speed) {
+        const angleStep = 360 / bulletCount;
+        for (let i = 0; i < bulletCount; i++) {
+            const angle = i * angleStep + angleOffset;
+            bullets.push(new Bullet({
+                friendly: false,
+                direction: angle,
+                x: this.x,
+                y: this.y,
+                speed: speed,
+                spriteSrc: "./assets/enemy/rumia/bullet00.png",
+                isRound: true,
+            }));
+        }
+    }
+
+
     handleCollisions(bullets, enemies) {
 
         for (let i = bullets.length - 1; i >= 0; i--) {
@@ -82,16 +96,18 @@ export default class Enemy {
             this.width,
             this.height
         );
-        ctx.save();
-        ctx.strokeStyle = "yellow";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(
-            this.x - this.width / 2,
-            this.y - this.height / 2,
-            this.width,
-            this.height
-        );
-        ctx.restore();
+
+        // Debug
+        // ctx.save();
+        // ctx.strokeStyle = "yellow";
+        // ctx.lineWidth = 2;
+        // ctx.strokeRect(
+        //     this.x - this.width / 2,
+        //     this.y - this.height / 2,
+        //     this.width,
+        //     this.height
+        // );
+        // ctx.restore();
     }
     isOffScreen(scene) {
         return this.y - this.height > scene.height;

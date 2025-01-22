@@ -56,16 +56,17 @@ export default class Bullet {
             this.width,
             this.height
         );
-        ctx.save();
-        ctx.strokeStyle = "green";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(
-            this.x - this.width / 2,
-            this.y - this.height / 2,
-            this.width,
-            this.height
-        );
-        ctx.restore();
+        // Debug
+        // ctx.save();
+        // ctx.strokeStyle = "green";
+        // ctx.lineWidth = 2;
+        // ctx.strokeRect(
+        //     this.x - this.width / 2,
+        //     this.y - this.height / 2,
+        //     this.width,
+        //     this.height
+        // );
+        // ctx.restore();
     }
     isOffScreen(scene) {
         const { x = 0, y = 0, width, height } = scene;
