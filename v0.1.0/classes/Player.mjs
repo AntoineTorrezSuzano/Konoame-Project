@@ -13,7 +13,7 @@ export default class Player {
         this.life = life;
     }
     handleMovement(keys, deltaTime) {
-        const currentSpeed = keys["shift"] ? this.speed / 2 : this.speed;
+        const currentSpeed = keys["shift"] ? this.speed / 2.5 : this.speed;
         if (keys["arrowup"]) this.y -= currentSpeed * deltaTime;
         if (keys["arrowdown"]) this.y += currentSpeed * deltaTime;
         if (keys["arrowleft"]) this.x -= currentSpeed * deltaTime;
@@ -31,7 +31,7 @@ export default class Player {
             x: this.x + bulletX,
             y: this.y + bulletY,
             speed: speed,
-            damage: 45,
+            damage: 20,
             spriteSrc: "./assets/characters/reimu/bullet_0.png",
             isRound: false,
         });

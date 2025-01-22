@@ -61,33 +61,33 @@ export default class Enemy {
         if (this.currentCooldowns.spiralRed <= 0) {
             const time = (performance.now() / 25) % 360;
             const numOfBullets = 20;
-            this.shootSpiral(bullets, numOfBullets, time, 250, true, this.bulletColors.red);
+            this.shootSpiral(bullets, numOfBullets, time, 150, true, this.bulletColors.red);
             this.currentCooldowns.spiralRed = this.cooldowns.spiralRed;
         }
         if (this.currentCooldowns.spiralYellow <= 0) {
             const time = (performance.now() / 50) % 360;
             const numOfBullets = 10;
-            this.shootSpiral(bullets, numOfBullets, time, 350, false, this.bulletColors.yellow);
+            this.shootSpiral(bullets, numOfBullets, time, 250, false, this.bulletColors.yellow);
             this.currentCooldowns.spiralYellow = this.cooldowns.spiralYellow;
         }
         if (this.currentCooldowns.spiralGreen <= 0) {
             const time = (performance.now() / 50) % 360;
             const numOfBullets = 50;
-            this.shootSpiral(bullets, numOfBullets, time, 200, false, this.bulletColors.green);
+            this.shootSpiral(bullets, numOfBullets, time, 100, false, this.bulletColors.green);
             this.currentCooldowns.spiralGreen = this.cooldowns.spiralGreen;
         }
         if (this.currentCooldowns.spiralMagenta <= 0) {
             const time = (performance.now() / 10) % 360;
             const numOfBullets = 1;
-            this.shootSpiral(bullets, numOfBullets, time, 275, false, this.bulletColors.magenta);
-            this.shootSpiral(bullets, numOfBullets, time, 275, true, this.bulletColors.magenta);
+            this.shootSpiral(bullets, numOfBullets, time, 175, false, this.bulletColors.magenta);
+            this.shootSpiral(bullets, numOfBullets, time, 175, true, this.bulletColors.magenta);
             this.currentCooldowns.spiralMagenta = this.cooldowns.spiralMagenta;
         }
 
         if (this.currentCooldowns.spiralCyan <= 0) {
             const bulletCount = 3;
             const spread = 40;
-            const speed = 300;
+            const speed = 200;
             this.shootWave(bullets, bulletCount, spread, speed, player, deltaTime);
 
         }
