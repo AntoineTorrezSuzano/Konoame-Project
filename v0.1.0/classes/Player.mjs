@@ -1,16 +1,20 @@
 import Bullet from "./Bullet.mjs";
 
 export default class Player {
-  constructor({ x, y, speed, spriteSrc, cooldown, hitboxSize = 10, life = 3 }) {
+  constructor({ x, y, speed, spriteSrc, cooldown, hitboxSize = 10, life = 3, bomb = 3 }) {
     this.x = x;
     this.y = y;
+    this.spawn = { x: this.x, y: this.y };
     this.speed = speed;
     this.sprite = new Image();
     this.sprite.src = spriteSrc;
     this.cooldown = cooldown;
     this.currentCooldown = 0;
+    this.currentBombCooldown = 0;
+    this.bombCooldown = 1;
     this.hitboxRadius = hitboxSize / 2;
     this.life = life;
+    this.bomb = bomb;
   }
   handleMovement(keys, deltaTime) {
     const currentSpeed = keys["shift"] ? this.speed / 2.5 : this.speed;
@@ -37,7 +41,7 @@ export default class Player {
       x: this.x + bulletX,
       y: this.y + bulletY,
       speed: speed,
-      damage: 20,
+      damage: 10,
       spriteSrc: "./assets/characters/reimu/bullet_0.png",
       isRound: false,
     });
@@ -47,6 +51,7 @@ export default class Player {
   update(deltaTime, keys, gameZone, bullets, status) {
 
     if (this.cooldown > 0) this.currentCooldown -= deltaTime;
+    if (this.bombCooldown > 0) this.currentBombCooldown -= deltaTime;
 
     this.handleMovement(keys, deltaTime);
     this.checkBoundaries(gameZone);
@@ -54,9 +59,14 @@ export default class Player {
     this.handleCollisions(bullets, status);
 
     if (keys["y"] && this.currentCooldown <= 0) {
-      this.shoot({ bullets: bullets, bulletX: 15, bulletY: 0 });
-      this.shoot({ bullets: bullets, bulletX: 0, bulletY: -10 });
-      this.shoot({ bullets: bullets, bulletX: -15, bulletY: 0 });
+      this.shoot({ bullets: bullets, bulletX: 20, bulletY: 0 });
+      this.shoot({ bullets: bullets, bulletX: 7, bulletY: -10 });
+      this.shoot({ bullets: bullets, bulletX: -7, bulletY: -10 });
+      this.shoot({ bullets: bullets, bulletX: -20, bulletY: 0 });
+    }
+    if (keys["x"] && this.currentBombCooldown <= 0 && this.bomb > 0) {
+      bullets.splice(0, bullets.length);
+      this.bomb--;
     }
   }
   handleCollisions(bullets, status) {
@@ -65,11 +75,14 @@ export default class Player {
       if (!bullet.friendly && bullet.collidesWith(this)) {
         console.log("Player Hit");
         this.life -= 1;
-        bullets.splice(i, 1);
         if (this.life <= 0) {
           this.onDeath(status);
           break;
         }
+        bullets.splice(0, bullets.length);
+        this.x = this.spawn.x;
+        this.y = this.spawn.y;
+        break;
       }
     }
   }

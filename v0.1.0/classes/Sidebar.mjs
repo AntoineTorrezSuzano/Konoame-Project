@@ -1,4 +1,5 @@
 import FPSCounter from "./FPSCounter.mjs";
+import PlayerBombs from "./PlayerBombs.mjs";
 import PlayerLives from "./PlayerLives.mjs";
 export default class Sidebar {
   constructor({ gameState }) {
@@ -6,6 +7,12 @@ export default class Sidebar {
     this.sidebarState = {
       playerLives: new PlayerLives({
         playerLives: this.gameState.player.life,
+        gameState: this.gameState,
+
+
+      }),
+      PlayerBombs: new PlayerBombs({
+        playerBombs: this.gameState.player.bomb,
         gameState: this.gameState,
       }),
 
@@ -15,7 +22,7 @@ export default class Sidebar {
   }
   update() { }
   render(ctx) {
-    const { playerLives } = this.sidebarState;
+    const { playerLives, playerBombs } = this.sidebarState;
     for (let i = 0; i < this.gameState.canvas.width; i += this.gameState.gameZone.y) {
       ctx.drawImage(this.bg, i, 0, this.gameState.gameZone.y, this.gameState.gameZone.y);
     }
@@ -33,7 +40,7 @@ export default class Sidebar {
       }
     }
     playerLives.render(ctx);
-
+    playerBombs.render(ctx);
 
 
 
