@@ -10,11 +10,16 @@
   - [x] Make them lose hp when hit by friendly bullet
   - [x] Disapear when no hp
   - [x] Correctly setup the hitbox with CollideWith
-- [ ] Add Information zone with player Lives
+- [x] Add Information zone with player Lives
   - [x] Put Player Image
   - [x] Put Player Lives
-  - [ ] Keyboard configuration
+- [ ] Keyboard configuration**On it**
+  - [ ] Display a window still in the canvas when press esc
+  - [ ] Make the game pause with esc
+  - [ ] When Player onDeath, if press Enter restart game
+  - [ ] Use arrow keys to move between options amd "y" to select
+  - [ ] Add the option to select key to shoot like "press on a key to choose it as shoot key"
 
-- [x] Make the player have 1 life and gameover when hit by a bullet **On it**
+- [x] Make the player have 1 life and gameover when hit by a bullet 
 - [x] Create pattern / more bullet for the enemy
 

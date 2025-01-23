@@ -45,6 +45,7 @@ export default class Player {
     this.currentCooldown = this.cooldown;
   }
   update(deltaTime, keys, gameZone, bullets, status) {
+
     if (this.cooldown > 0) this.currentCooldown -= deltaTime;
 
     this.handleMovement(keys, deltaTime);

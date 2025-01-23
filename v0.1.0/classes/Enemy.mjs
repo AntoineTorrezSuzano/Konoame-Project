@@ -62,6 +62,7 @@ export default class Enemy {
   }
 
   update(deltaTime, bullets, enemies, player) {
+
     for (const key in this.currentCooldowns) {
       if (this.currentCooldowns[key] > 0) {
         this.currentCooldowns[key] -= deltaTime;
