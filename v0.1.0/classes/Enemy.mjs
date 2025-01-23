@@ -24,8 +24,14 @@ export default class Enemy {
     this.width = hitboxSize;
     this.height = hitboxSize;
 
-    this.waveTimer = 0;
-    this.waveIndex = 0;
+    this.waveTimers = {
+      right: 0,
+      left: 0,
+    };
+    this.waveIndexes = {
+      right: 0,
+      left: 0,
+    };
 
     this.currentCooldowns = {
       spiralGreen: 0,
@@ -37,7 +43,7 @@ export default class Enemy {
     this.cooldowns = {
       spiralGreen: 0.6,
       spiralRed: 0.4,
-      spiralCyan: 1,
+      spiralCyan: 2.5,
       spiralMagenta: 0.05,
       spiralYellow: 0.3,
     };
@@ -128,9 +134,12 @@ export default class Enemy {
     if (this.currentCooldowns.spiralCyan <= 0) {
       const bulletCount = 3;
       const spread = 40;
-      const speed = 200;
-      this.shootWave(bullets, bulletCount, spread, speed, player, deltaTime);
+      const speed = 250;
+      this.shootWave(bullets, bulletCount, spread, speed, player, deltaTime, this.x - 100, this.y, "left");
+
+      this.shootWave(bullets, bulletCount, spread, speed, player, deltaTime, this.x + 100, this.y, "right");
     }
+
 
     this.handleCollisions(bullets, enemies);
   }
@@ -141,20 +150,20 @@ export default class Enemy {
   //         this.currentCooldown = this.cooldown;
   //     }
   // }
-  shootWave(bullets, bulletCount, spread, speed, player, deltaTime) {
+  shootWave(bullets, bulletCount, spread, speed, player, deltaTime, startX = this.x, startY = this.y, waveId) {
     // Calculate angle to player
-    const dx = player.x - this.x;
-    const dy = player.y - this.y;
+    const dx = player.x - startX;
+    const dy = player.y - startY;
     const angleToPlayer = Math.atan2(dy, -dx) * (180 / Math.PI);
 
     // Check if it's time to shoot the next bullet in the wave
-    if (this.waveTimer <= 0 && this.waveIndex < bulletCount) {
+    if (this.waveTimers[waveId] <= 0 && this.waveIndexes[waveId] < bulletCount) {
       bullets.push(
         new Bullet({
           friendly: false,
           direction: angleToPlayer - 90,
-          x: this.x,
-          y: this.y,
+          x: startX,
+          y: startY,
           speed: speed,
           spriteSrc: "./assets/enemy/rumia/bullet02.png",
           isRound: true,
@@ -162,20 +171,20 @@ export default class Enemy {
           height: 35,
         })
       );
-      this.waveIndex++;
-      this.waveTimer = 0.25; // Delay between bullets in the wave
+      this.waveIndexes[waveId]++;
+      this.waveTimers[waveId] = 0.25; // Delay between bullets in the wave
     }
 
     // Reset wave after firing all bullets
-    if (this.waveIndex >= bulletCount) {
-      this.waveIndex = 0;
-      this.waveTimer = 0;
+    if (this.waveIndexes[waveId] >= bulletCount) {
+      this.waveIndexes[waveId] = 0;
+      this.waveTimers[waveId] = 0;
       this.currentCooldowns.spiralCyan = this.cooldowns.spiralCyan; // Cooldown before the next wave
     }
 
     // Reduce wave timer
-    if (this.waveTimer > 0) {
-      this.waveTimer -= deltaTime;
+    if (this.waveTimers[waveId] > 0) {
+      this.waveTimers[waveId] -= deltaTime;
     }
   }
   shootSpiral(

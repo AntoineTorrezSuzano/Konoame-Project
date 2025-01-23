@@ -11,5 +11,10 @@
   - [x] Disapear when no hp
   - [x] Correctly setup the hitbox with CollideWith
 - [ ] Add Information zone with player Lives
+  - [x] Put Player Image
+  - [x] Put Player Lives
+  - [ ] Keyboard configuration
+
 - [x] Make the player have 1 life and gameover when hit by a bullet **On it**
 - [x] Create pattern / more bullet for the enemy
+
